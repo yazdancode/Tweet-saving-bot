@@ -1,21 +1,19 @@
 from telebot import TeleBot
-
-from Callbacks.Callback.callback import callback_handler, text_button_handler
+from Callbacks import callback
 
 
 def register_callback_handler(bot: TeleBot) -> None:
-    bot.register_callback_query_handler(
-        callback=callback_handler,
-        func=lambda call: call.data.startswith("channel"),
-        pass_bot=True,
-    )
-    bot.register_callback_query_handler(
-        callback=callback_handler,
-        func=lambda call: call.data.startswith("membership"),
-        pass_bot=True,
-    )
-    bot.register_callback_query_handler(
-        callback=text_button_handler,
-        func=lambda call: call.data.startswith("text_button"),
-        pass_bot=True,
-    )
+    callback_prefixes = [
+        "membership",
+        "tweet",
+        "request",
+        "guide",
+        "manufacture",
+        "confirm",
+    ]
+    for prefix in callback_prefixes:
+        bot.register_callback_query_handler(
+            callback=callback.handle_channel_callback,
+            func=lambda call, p=prefix: call.data.startswith(p),
+            pass_bot=True,
+        )

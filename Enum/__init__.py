@@ -1,3 +1,3 @@
-from .enum import BotCommands, BotResponses, Channel, Keys
+from .enum import BotMessages, BotCommands, ChannelInfo
 
-__all__ = ["BotResponses", "BotCommands", "Channel", "Keys"]
+__all__ = ["BotMessages", "BotCommands", "ChannelInfo"]
