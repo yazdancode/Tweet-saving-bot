@@ -88,7 +88,7 @@ class Tweet(BaseModel, table=True):
             return tweet
 
     @classmethod
-    def get(cls, chat_id: int) -> Optional["Tweet"]:
+    def get(cls,  chat_id: int) -> Optional["Tweet"]:
         with Session(engine) as session:
             tweet = session.query(cls).filter_by(chat_id=chat_id).first()
             return tweet
@@ -146,13 +146,13 @@ class ApprovedRequest(BaseModel, table=True):
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
     content: str = Field(max_length=5000)
-    approval_date: datetime
+    # approval_date: datetime
     request_id: int = Field(foreign_key="admin.id")
     request: Optional[Admin] = Relationship(back_populates="approved_request")
 
     @classmethod
     def create_approvedrequest(
-        cls, chat_id: int, first_name: str, last_name: str, content: str, approval_date:int
+        cls, chat_id: int, first_name: str, last_name: str, content: str,
     ) -> "ApprovedRequest":
         with Session(engine) as session:
             request = cls(
@@ -160,7 +160,7 @@ class ApprovedRequest(BaseModel, table=True):
                 first_name=first_name,
                 last_name=last_name,
                 content=content,
-                approval_date=approval_date
+                # approval_date=approval_date
             )
             session.add(request)
             session.commit()

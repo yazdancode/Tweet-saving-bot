@@ -1,11 +1,12 @@
+from typing import Callable, Optional
+from sqlmodel import Field
 from telebot import TeleBot
-from datetime import datetime
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
+
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
 from Model.model import Student, Tweet, ApprovedRequest, Admin
-from typing import Callable, Optional
 
 CALLBACK_MEMBERSHIP: str = "membership"
 CALLBACK_GUIDE: str = "guide"
@@ -82,14 +83,30 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
                 reply_markup=keyboard,
             )
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
-    # bot.send_message(call.message.chat.id, "you clicked on hi button")
-    tweet: Tweet = Tweet.get(chat_id=call.message.chat.id)
-    print(tweet)
-    bot.send_message(call.message.chat.id, f"{tweet}")
-    # if student:
-    #     student_username = student.username
-    #     message = f"درخواست شما توسط ادمین تأیید شد. اطلاعات تایید شده: {content}"
-    #     bot.send_message(chat_id=student_username, text=message)
+    admin = Admin.get(username=call.from_user.username)
+    student = Student.get(chat_id=call.message.chat.id)
+    tweet = Tweet.get(chat_id=call.message.chat.id)
+    if tweet:
+        chat_id = tweet.chat_id
+        first_name = tweet.first_name
+        last_name = tweet.last_name
+        content = tweet.content
+        ApprovedRequest.create_approvedrequest(
+            chat_id=chat_id,
+            first_name=first_name,
+            last_name=last_name,
+            content=content,
+        )
+    else:
+        if admin:
+            chat_id = call.message.chat.id
+            bot.send_message(chat_id, "توییتی با این شناسه یافت نشد.")
+        else:
+            pass
+        if student:
+             bot.send_message(student.chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
+        else:
+            bot.send_message(student.chat_id, "دانش‌آموزی با این یوزرنیم یافت نشد.")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
