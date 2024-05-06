@@ -102,7 +102,7 @@ class Admin(BaseModel, table=True):
     expiration: int = datetime(year=2024, month=5, day=26)
     phone_number: int = config("PHONE_ADMIN", cast=int)
     tweets: List["Tweet"] = Relationship(back_populates="admin")
-    approved_request: List["ApprovedRequest"] = Relationship(back_populates="request")
+    approved_request: List["ApprovedRequest"] = Relationship(back_populates="admin")
 
     @classmethod
     def create_admin(cls) -> None:
@@ -146,9 +146,8 @@ class ApprovedRequest(BaseModel, table=True):
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
     content: str = Field(max_length=5000)
-    # approval_date: datetime
-    request_id: int = Field(foreign_key="admin.id")
-    request: Optional[Admin] = Relationship(back_populates="approved_request")
+    admin_id: Optional[int] = Field(default=None, foreign_key="admin.id")
+    admin: Optional[Admin] = Relationship(back_populates="approved_request")
 
     @classmethod
     def create_approvedrequest(
@@ -160,7 +159,6 @@ class ApprovedRequest(BaseModel, table=True):
                 first_name=first_name,
                 last_name=last_name,
                 content=content,
-                # approval_date=approval_date
             )
             session.add(request)
             session.commit()

@@ -1,5 +1,4 @@
 from typing import Callable, Optional
-from sqlmodel import Field
 from telebot import TeleBot
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 
@@ -97,16 +96,17 @@ def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
             last_name=last_name,
             content=content,
         )
-    else:
-        if admin:
-            chat_id = call.message.chat.id
-            bot.send_message(chat_id, "توییتی با این شناسه یافت نشد.")
-        else:
-            pass
-        if student:
-             bot.send_message(student.chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
-        else:
-            bot.send_message(student.chat_id, "دانش‌آموزی با این یوزرنیم یافت نشد.")
+        bot.send_message(chat_id=call.message.chat.id, text=f"{first_name}")
+    # else:
+    #     if admin:
+    #         chat_id = call.message.chat.id
+    #         bot.send_message(chat_id, "توییتی با این شناسه یافت نشد.")
+    #     else:
+    #         pass
+    #     if student:
+    #          bot.send_message(student.chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
+    #     else:
+    #         bot.send_message(student.chat_id, "دانش‌آموزی با این یوزرنیم یافت نشد.")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
