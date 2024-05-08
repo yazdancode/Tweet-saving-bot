@@ -1,25 +1,25 @@
 from typing import Callable, Optional
 from telebot import TeleBot
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
-
 from Config import configs
-from Enum.enum import BotMessages, BotCommands, ChannelInfo
+from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
-from Model.model import Student, Tweet, ApprovedRequest, Admin
+from Model.model import Student, ApprovedRequest, Admin, Tweet
 
-CALLBACK_MEMBERSHIP: str = "membership"
-CALLBACK_GUIDE: str = "guide"
-CALLBACK_MANUFACTURE: str = "manufacture"
-CALLBACK_CONFIRM: str = "confirm"
 ActionType = Callable[[], None]
 
 
 def handle_channel_callback(call: CallbackQuery, bot: TeleBot) -> None:
     actions: dict[str, ActionType] = {
-        CALLBACK_MEMBERSHIP: lambda: handle_membership_request(call, bot),
-        CALLBACK_GUIDE: lambda: guide_handler(bot, call.message),
-        CALLBACK_MANUFACTURE: lambda: manufacturer_handler(bot, call.message),
-        CALLBACK_CONFIRM: lambda: confirmation_handler(call, bot),
+        CallbackDate.CALLBACK_MEMBERSHIP.value: lambda: handle_membership_request(
+            call, bot
+        ),
+        CallbackDate.CALLBACK_GUIDE.value: lambda: guide_handler(bot, call.message),
+        CallbackDate.CALLBACK_MANUFACTURE.value: lambda: manufacturer_handler(
+            bot, call.message
+        ),
+        CallbackDate.CALLBACK_CONFIRM.value: lambda: confirmation_handler(call, bot),
+        CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
     }
 
     action: Optional[ActionType] = actions.get(call.data)
@@ -81,37 +81,17 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
                 BotMessages.generate_starts_message(),
                 reply_markup=keyboard,
             )
+
+
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
-    admin = Admin.get(username=call.from_user.username)
-    student = Student.get(chat_id=call.message.chat.id)
-    tweet = Tweet.get(chat_id=call.message.chat.id)
-    if tweet:
-        chat_id = tweet.chat_id
-        first_name = tweet.first_name
-        last_name = tweet.last_name
-        content = tweet.content
-        ApprovedRequest.create_approvedrequest(
-            chat_id=chat_id,
-            first_name=first_name,
-            last_name=last_name,
-            content=content,
-        )
-        bot.send_message(chat_id=call.message.chat.id, text=f"{first_name}")
-    # else:
-    #     if admin:
-    #         chat_id = call.message.chat.id
-    #         bot.send_message(chat_id, "توییتی با این شناسه یافت نشد.")
-    #     else:
-    #         pass
-    #     if student:
-    #          bot.send_message(student.chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
-    #     else:
-    #         bot.send_message(student.chat_id, "دانش‌آموزی با این یوزرنیم یافت نشد.")
+     chat_id: int = call.message.chat.id
+     user_text: str =call.message.text.strip()
+     bot.send_message(chat_id=call.message.chat.id, text=f"{user_text}")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass
-#
-#
-# def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
-#     pass
+
+
+def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
+    pass

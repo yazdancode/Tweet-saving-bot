@@ -6,10 +6,10 @@ def register_callback_handler(bot: TeleBot) -> None:
     callback_prefixes = [
         "membership",
         "tweet",
-        "request",
         "guide",
         "manufacture",
         "confirm",
+        "cancel",
     ]
     for prefix in callback_prefixes:
         bot.register_callback_query_handler(

@@ -3,7 +3,10 @@ from Model.model import Student
 from telebot.apihelper import ApiTelegramException
 from typing import List, Dict, Union
 from Enum.enum import BotMessages, ChannelInfo, BotCommands
-from Callbacks.Callback.Tweet_Request.tweet_request import tweet_request
+from Callbacks.Callback.Tweet_Request.tweet_request import (
+    tweet_request,
+    support_handler,
+)
 from telebot.types import (
     Message,
     ReplyKeyboardMarkup,
@@ -109,13 +112,37 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 received_message, lambda message: tweet_request(message, bot)
             )
         elif received_message.text == BotCommands.MANUFACTURER.value:
-            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-            keyboards.add(BotMessages.COMING_BACK.value)
+            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            keyboards.add(
+                BotCommands.Communication__management.value,
+                BotCommands.Programmer_resume.value,
+                BotMessages.COMING_BACK.value,
+            )
             bot.send_message(
                 received_message.chat.id,
-                BotMessages.profile.value,
+                BotMessages.profiles.value,
                 reply_markup=keyboards,
             )
+        elif received_message.text == BotCommands.Communication__management.value:
+            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            keyboards.add(BotCommands.opt_out.value)
+            bot.send_message(
+                chat_id=messages.chat.id,
+                text=BotMessages.text.value,
+                reply_markup=keyboards,
+            )
+            bot.register_next_step_handler(
+                received_message, lambda message: support_handler(message, bot)
+            )
+        elif received_message.text == BotCommands.Programmer_resume.value:
+            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            keyboards.add(BotCommands.opt_out.value)
+            bot.send_message(
+                chat_id=messages.chat.id,
+                text=BotMessages.profile.value,
+                reply_markup=keyboards,
+            )
+
         elif received_message.text == BotCommands.Search_request.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotMessages.COMING_BACK.value)
@@ -148,6 +175,22 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 text=BotMessages.generate_starts_message(),
                 reply_markup=keyboards,
             )
+        elif received_message.text == BotCommands.opt_out.value:
+            chat_id = received_message.chat.id
+            keyboards = ReplyKeyboardMarkup(
+                resize_keyboard=True, one_time_keyboard=True, row_width=2
+            )
+            keyboards.add(
+                KeyboardButton(ChannelInfo.create_request.value),
+                KeyboardButton(BotCommands.GUIDE.value),
+                KeyboardButton(BotCommands.MANUFACTURER.value),
+                KeyboardButton(BotCommands.Search_request.value),
+            )
+            bot.send_message(
+                chat_id,
+                text=BotMessages.generate_starts_message(),
+                reply_markup=keyboards,
+            )
 
 
 def guide_handler(bot: TeleBot, message: Message) -> None:
@@ -155,4 +198,42 @@ def guide_handler(bot: TeleBot, message: Message) -> None:
 
 
 def manufacturer_handler(bot: TeleBot, message: Message) -> None:
-    send_message_with_markup(bot, message.chat.id, BotMessages.profile.value)
+    keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    keyboards.add(
+        BotCommands.Communication__management.value,
+        BotCommands.Programmer_resume.value,
+        BotMessages.COMING_BACK.value,
+    )
+    send_message_with_markup(
+        bot, message.chat.id, BotMessages.profiles.value, reply_markup=keyboards
+    )
+    if message.text == BotCommands.Communication__management.value:
+        keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        keyboards.add(BotCommands.opt_out.value)
+        bot.send_message(
+            chat_id=message.chat.id, text=BotMessages.text.value, reply_markup=keyboards
+        )
+    elif message.text == BotCommands.Programmer_resume.value:
+        keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        keyboards.add(BotCommands.opt_out.value)
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=BotMessages.profile.value,
+            reply_markup=keyboards,
+        )
+    elif message.text == BotCommands.opt_out.value:
+        chat_id = message.chat.id
+        keyboards = ReplyKeyboardMarkup(
+            resize_keyboard=True, one_time_keyboard=True, row_width=2
+        )
+        keyboards.add(
+            KeyboardButton(ChannelInfo.create_request.value),
+            KeyboardButton(BotCommands.GUIDE.value),
+            KeyboardButton(BotCommands.MANUFACTURER.value),
+            KeyboardButton(BotCommands.Search_request.value),
+        )
+        bot.send_message(
+            chat_id,
+            text=BotMessages.generate_starts_message(),
+            reply_markup=keyboards,
+        )

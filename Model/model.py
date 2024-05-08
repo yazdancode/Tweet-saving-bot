@@ -88,7 +88,7 @@ class Tweet(BaseModel, table=True):
             return tweet
 
     @classmethod
-    def get(cls,  chat_id: int) -> Optional["Tweet"]:
+    def get(cls, chat_id: int) -> Optional["Tweet"]:
         with Session(engine) as session:
             tweet = session.query(cls).filter_by(chat_id=chat_id).first()
             return tweet
@@ -151,7 +151,11 @@ class ApprovedRequest(BaseModel, table=True):
 
     @classmethod
     def create_approvedrequest(
-        cls, chat_id: int, first_name: str, last_name: str, content: str,
+        cls,
+        chat_id: int,
+        first_name: str,
+        last_name: str,
+        content: str,
     ) -> "ApprovedRequest":
         with Session(engine) as session:
             request = cls(
