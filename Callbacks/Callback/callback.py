@@ -86,7 +86,7 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
      chat_id: int = call.message.chat.id
      user_text: str =call.message.text.strip()
-     bot.send_message(chat_id=call.message.chat.id, text=f"{user_text}")
+     bot.send_message(chat_id=call.message.chat.id, text=f"{chat_id}")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:

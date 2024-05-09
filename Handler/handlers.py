@@ -142,7 +142,6 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 text=BotMessages.profile.value,
                 reply_markup=keyboards,
             )
-
         elif received_message.text == BotCommands.Search_request.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotMessages.COMING_BACK.value)
