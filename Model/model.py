@@ -1,3 +1,5 @@
+import uuid
+
 from decouple import config
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -9,7 +11,6 @@ engine = create_engine(sqlite_url, echo=True)
 
 
 class BaseModel(SQLModel):
-    id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default=datetime.today(), nullable=False)
     last_edited: datetime = Field(
         default_factory=lambda: datetime.today(), nullable=False
@@ -17,6 +18,7 @@ class BaseModel(SQLModel):
 
 
 class Student(BaseModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(max_length=50)
     chat_id: int = Field(max_length=100)
     last_name: str = Field(max_length=50)
@@ -57,6 +59,9 @@ class Student(BaseModel, table=True):
 
 
 class Tweet(BaseModel, table=True):
+    id_random: Optional[str] = Field(
+        default_factory=lambda: str(uuid.uuid4()), primary_key=True
+    )
     chat_id: int = Field(max_length=100)
     first_name: str = Field(max_length=200)
     last_name: str = Field(max_length=200)
@@ -74,6 +79,7 @@ class Tweet(BaseModel, table=True):
         last_name: str,
         content: str,
         student_id: Optional[int] = None,
+        admin_id: Optional[int] = None,
     ) -> "Tweet":
         with Session(engine) as session:
             tweet = cls(
@@ -82,19 +88,25 @@ class Tweet(BaseModel, table=True):
                 last_name=last_name,
                 content=content,
                 student_id=student_id,
+                admin_id=admin_id,
             )
             session.add(tweet)
             session.commit()
             return tweet
 
     @classmethod
-    def get(cls, chat_id: int) -> Optional["Tweet"]:
+    def get(cls, id_random: str, chat_id: int) -> Optional["Tweet"]:
         with Session(engine) as session:
-            tweet = session.query(cls).filter_by(chat_id=chat_id).first()
+            tweet = (
+                session.query(cls)
+                .filter_by(id_random=id_random, chat_id=chat_id)
+                .first()
+            )
             return tweet
 
 
 class Admin(BaseModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     telegram_chat_id: int = config("TELEGRAM_CHAT_ID_ADMIN", cast=int)
     username: str = "Y_Shabanei"
     email: str = config("EMAIL_ADMIN")
@@ -142,6 +154,7 @@ class Admin(BaseModel, table=True):
 
 
 class ApprovedRequest(BaseModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     chat_id: int = Field(max_length=10)
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)

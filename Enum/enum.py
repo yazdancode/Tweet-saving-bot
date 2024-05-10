@@ -132,6 +132,7 @@ class ChannelInfo(Enum):
     error = "❌ خطا این بخش در هنوز طراحی ایجاد نشده است"
     command = "/start"
     commands = "این یک دستور هست و در دیتا بیس ذخیره نمیشه"
+    Order = "ثبت سفارش"
 
 
 class CallbackDate(Enum):
