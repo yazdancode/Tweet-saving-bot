@@ -4,7 +4,7 @@ from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
-from Model.model import Student, ApprovedRequest, Admin, Tweet
+from Model.model import Student
 
 ActionType = Callable[[], None]
 
@@ -84,10 +84,7 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
 
 
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
-     chat_id: int = call.message.chat.id
-     user_text: str =call.message.text.strip()
-     bot.send_message(chat_id=call.message.chat.id, text=f"{chat_id}")
-
+    pass
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass

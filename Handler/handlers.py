@@ -1,3 +1,4 @@
+import telebot.types
 from telebot import TeleBot
 from Model.model import Student
 from telebot.apihelper import ApiTelegramException
@@ -91,6 +92,14 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
             BotMessages.generate_channel_membership_message(),
             reply_markup=keyboard,
         )
+    bot.delete_my_commands()
+    bot.set_my_commands(
+        commands=[
+            telebot.types.BotCommand("start", "شروع ربات"),
+            telebot.types.BotCommand("guide", "راهنمای ربات"),
+            telebot.types.BotCommand("manufacturer", "ارتباط با سازنده ربات"),
+        ]
+    )
 
     @bot.message_handler(func=lambda received_message: True)
     def handle_keyboard(received_message: Message):
@@ -117,6 +126,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 BotCommands.Communication__management.value,
                 BotCommands.Programmer_resume.value,
                 BotMessages.COMING_BACK.value,
+                ChannelInfo.Order.value,
             )
             bot.send_message(
                 received_message.chat.id,
@@ -124,6 +134,17 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 reply_markup=keyboards,
             )
         elif received_message.text == BotCommands.Communication__management.value:
+            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            keyboards.add(BotCommands.opt_out.value)
+            bot.send_message(
+                chat_id=messages.chat.id,
+                text=BotMessages.text.value,
+                reply_markup=keyboards,
+            )
+            bot.register_next_step_handler(
+                received_message, lambda message: support_handler(message, bot)
+            )
+        elif received_message.text == ChannelInfo.Order.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotCommands.opt_out.value)
             bot.send_message(
@@ -142,6 +163,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 text=BotMessages.profile.value,
                 reply_markup=keyboards,
             )
+
         elif received_message.text == BotCommands.Search_request.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotMessages.COMING_BACK.value)
@@ -202,6 +224,7 @@ def manufacturer_handler(bot: TeleBot, message: Message) -> None:
         BotCommands.Communication__management.value,
         BotCommands.Programmer_resume.value,
         BotMessages.COMING_BACK.value,
+        ChannelInfo.Order.value,
     )
     send_message_with_markup(
         bot, message.chat.id, BotMessages.profiles.value, reply_markup=keyboards
@@ -235,4 +258,13 @@ def manufacturer_handler(bot: TeleBot, message: Message) -> None:
             chat_id,
             text=BotMessages.generate_starts_message(),
             reply_markup=keyboards,
+        )
+    elif message.text == ChannelInfo.Order.value:
+        keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        keyboards.add(BotCommands.opt_out.value)
+        bot.send_message(
+            chat_id=message.chat.id, text=BotMessages.text.value, reply_markup=keyboards
+        )
+        bot.register_next_step_handler(
+            message, lambda messages: support_handler(message, bot)
         )
