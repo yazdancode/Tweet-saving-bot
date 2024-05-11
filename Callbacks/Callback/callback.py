@@ -5,7 +5,6 @@ from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
 from Model.model import Student
-
 ActionType = Callable[[], None]
 
 
@@ -19,7 +18,7 @@ def handle_channel_callback(call: CallbackQuery, bot: TeleBot) -> None:
             bot, call.message
         ),
         CallbackDate.CALLBACK_CONFIRM.value: lambda: confirmation_handler(call, bot),
-        CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
+        # CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
     }
 
     action: Optional[ActionType] = actions.get(call.data)
@@ -86,9 +85,10 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
     pass
 
+
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass
 
 
-def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
-    pass
+# def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
+#     pass

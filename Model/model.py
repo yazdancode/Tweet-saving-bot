@@ -97,11 +97,7 @@ class Tweet(BaseModel, table=True):
     @classmethod
     def get(cls, id_random: str) -> Optional["Tweet"]:
         with Session(engine) as session:
-            tweet = (
-                session.query(cls)
-                .filter_by(id_random=id_random)
-                .first()
-            )
+            tweet = session.query(cls).filter_by(id_random=id_random).first()
             return tweet
 
 
