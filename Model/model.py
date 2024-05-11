@@ -95,9 +95,19 @@ class Tweet(BaseModel, table=True):
             return tweet
 
     @classmethod
+<<<<<<< HEAD
     def get(cls, id_random: str) -> Optional["Tweet"]:
         with Session(engine) as session:
             tweet = session.query(cls).filter_by(id_random=id_random).first()
+=======
+    def get(cls, id_random: str, chat_id: int) -> Optional["Tweet"]:
+        with Session(engine) as session:
+            tweet = (
+                session.query(cls)
+                .filter_by(id_random=id_random, chat_id=chat_id)
+                .first()
+            )
+>>>>>>> 411002c887c4c25847bca799f4206df928dc5b4d
             return tweet
 
 
