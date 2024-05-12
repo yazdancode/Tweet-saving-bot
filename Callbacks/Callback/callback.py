@@ -4,7 +4,8 @@ from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
-from Model.model import Student
+from Model.model import Student, Tweet
+
 ActionType = Callable[[], None]
 
 

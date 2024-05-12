@@ -1,4 +1,5 @@
 from decouple import config
+
 from telebot import TeleBot
 from telebot.types import InlineKeyboardMarkup, Message, InlineKeyboardButton
 from Config import configs
@@ -7,19 +8,20 @@ from Model.model import Tweet, Admin
 
 
 def tweet_request(message: Message, bot: TeleBot) -> None:
+    username: str = message.from_user.username or "نام کاربری وجود ندارد"
     chat_id: int = message.chat.id
-    first_name: str = message.chat.first_name or "UnknownFirstName"
-    last_name: str = message.chat.last_name or "UnknownLastName"
+    first_name: str = message.chat.first_name or "نام نامشخص"
+    last_name: str = message.chat.last_name or "نام خانوادگی وجود ندارد"
     user_text: str = message.text.strip()
     telegram_chat_id: str = config("TELEGRAM_CHAT_ID_ADMIN")
     new_request_msg: str = (
-        f"یک درخواست جدید از طرف کاربر"
-        f"<ins>{first_name}</ins> "
-        f"با ایدی تگرامی "
-        f"<ins>{chat_id}</ins> "
+        f"یک درخواست جدید دریافت شد\nاطلاعات کاربر به شرح زیر است:\n"
+        f"محتوای درخواست: {user_text}\n"
+        f"نام: {first_name}\n"
+        f"نام خانوادگی: {last_name}\n"
+        f"نام کاربری: {username}\n"
+        f"چت_ایدی:{chat_id}\n"
         "دریافت شد "
-        "متن درخواست :"
-        f"{str(user_text)}"
     )
     bot.send_message(telegram_chat_id, text=new_request_msg, parse_mode="html")
     Tweet.create_tweet(
