@@ -1,10 +1,14 @@
+import os
 from decouple import config
 from typing import List, Optional
 from datetime import datetime, timezone
 from sqlmodel import Field, Relationship, SQLModel, Session, create_engine
 
+database_directory = os.path.join("settings", "20.24")
+os.makedirs(database_directory, exist_ok=True)
 SQLITE_FILE_NAME = "database.db"
-sqlite_url = f"sqlite:///{SQLITE_FILE_NAME}"
+sqlite_path = os.path.join(database_directory, SQLITE_FILE_NAME)
+sqlite_url = f"sqlite:///{sqlite_path}"
 engine = create_engine(sqlite_url, echo=True)
 
 
