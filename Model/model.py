@@ -58,6 +58,7 @@ class Student(BaseModel, table=True):
 
 class Tweet(BaseModel, table=True):
     chat_id: int = Field(max_length=100)
+    username: str = Field(max_length=50)
     first_name: str = Field(max_length=200)
     last_name: str = Field(max_length=200)
     content: str = Field(max_length=200)
@@ -70,6 +71,7 @@ class Tweet(BaseModel, table=True):
     def create_tweet(
         cls,
         chat_id: int,
+        username:str,
         first_name: str,
         last_name: str,
         content: str,
@@ -79,6 +81,7 @@ class Tweet(BaseModel, table=True):
         with Session(engine) as session:
             tweet = cls(
                 chat_id=chat_id,
+                username=username,
                 first_name=first_name,
                 last_name=last_name,
                 content=content,

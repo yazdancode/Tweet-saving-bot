@@ -63,7 +63,7 @@ class BotMessages(Enum):
     SUBMIT_TEXT = "نوشتن متن"
     SUBMIT_MATAN = "توییت"
     DELETE_TEXT = "حذف توییت"
-    TWEET_TEXT = "برای نوشتن توییتت خود روی گزینه نوشتن متن زیر کلیک کنید :"
+    TWEET_TEXT = "برای نوشتن توییت خود روی گزینه نوشتن متن زیر کلیک کنید :"
     COMING_BACK = "بازگشت"
     profile = (
         "┬\n [❤️ Profile ]"

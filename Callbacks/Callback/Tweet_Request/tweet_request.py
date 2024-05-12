@@ -26,6 +26,7 @@ def tweet_request(message: Message, bot: TeleBot) -> None:
     bot.send_message(telegram_chat_id, text=new_request_msg, parse_mode="html")
     Tweet.create_tweet(
         chat_id=chat_id,
+        username=username,
         first_name=first_name,
         last_name=last_name,
         content=user_text,
