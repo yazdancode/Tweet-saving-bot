@@ -22,7 +22,7 @@ class BaseModel(SQLModel, Base):
     )
 
     def __repr__(self):
-        return self.id
+        return self.id, self.username, self.chat_id, self.last_name, self.first_name
 
 
 class Student(BaseModel, Base, table=True):
@@ -116,9 +116,9 @@ class Tweet(BaseModel, Base, table=True):
             return tweet
 
     @classmethod
-    def get(cls, tweet_id: int) -> Optional["Tweet"]:
+    def get(cls, chat_id: int) -> Optional["Tweet"]:
         with Session(engine) as session:
-            tweet = session.query(cls).filter_by(tweet_id=tweet_id).first()
+            tweet = session.query(cls).filter_by(chat_id=chat_id).first()
             return tweet
 
 
