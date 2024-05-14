@@ -15,7 +15,6 @@ engine = create_engine(sqlite_url, echo=True)
 
 class BaseModel(SQLModel, Base):
     __tablename__ = "model-basemodel"
-    id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default=datetime.today(), nullable=False)
     last_edited: datetime = Field(
         default_factory=lambda: datetime.today(), nullable=False
@@ -27,6 +26,7 @@ class BaseModel(SQLModel, Base):
 
 class Student(BaseModel, Base, table=True):
     __tablename__ = "student"
+    id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(max_length=50)
     chat_id: int = Field(max_length=100)
     last_name: str = Field(max_length=50)
@@ -71,6 +71,7 @@ class Student(BaseModel, Base, table=True):
 
 class Tweet(BaseModel, Base, table=True):
     __tablename__ = "tweet"
+    id_number: Optional[int] = Field(default=None, primary_key=True)
     chat_id: int = Field(max_length=100)
     username: str = Field(max_length=50)
     first_name: str = Field(max_length=200)
@@ -83,6 +84,7 @@ class Tweet(BaseModel, Base, table=True):
 
     def __repr__(self):
         return (
+            self.id_number,
             self.chat_id,
             self.username,
             self.first_name,
@@ -116,14 +118,15 @@ class Tweet(BaseModel, Base, table=True):
             return tweet
 
     @classmethod
-    def get(cls, chat_id) -> Optional["Tweet"]:
+    def get(cls, id_number: int) -> Optional["Tweet"]:
         with Session(engine) as session:
-            tweet = session.query(cls).filter_by(chat_id=chat_id).first()
+            tweet = session.query(cls).filter_by(id_number=id_number).first()
             return tweet
 
 
 class Admin(BaseModel, Base, table=True):
     __tablename__ = "admin"
+    id: Optional[int] = Field(default=None, primary_key=True)
     telegram_chat_id: int = config("TELEGRAM_CHAT_ID_ADMIN", cast=int)
     username: str = "Y_Shabanei"
     email: str = config("EMAIL_ADMIN")
@@ -182,6 +185,7 @@ class Admin(BaseModel, Base, table=True):
 
 class ApprovedRequest(BaseModel, Base, table=True):
     __tablename__ = "approvedrequest"
+    id: Optional[int] = Field(default=None, primary_key=True)
     chat_id: int = Field(max_length=10)
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
