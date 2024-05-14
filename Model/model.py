@@ -116,7 +116,7 @@ class Tweet(BaseModel, Base, table=True):
             return tweet
 
     @classmethod
-    def get(cls, chat_id: int) -> Optional["Tweet"]:
+    def get(cls, chat_id) -> Optional["Tweet"]:
         with Session(engine) as session:
             tweet = session.query(cls).filter_by(chat_id=chat_id).first()
             return tweet
