@@ -3,6 +3,7 @@ from decouple import config
 from typing import List, Optional
 from datetime import datetime, timezone
 from sqlmodel import Field, Relationship, SQLModel, Session, create_engine
+from data_base.dbcore import Base
 
 database_directory = os.path.join("settings", "20.24")
 os.makedirs(database_directory, exist_ok=True)
@@ -12,15 +13,20 @@ sqlite_url = f"sqlite:///{sqlite_path}"
 engine = create_engine(sqlite_url, echo=True)
 
 
-class BaseModel(SQLModel):
+class BaseModel(SQLModel, Base):
+    __tablename__ = "model-basemodel"
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default=datetime.today(), nullable=False)
     last_edited: datetime = Field(
         default_factory=lambda: datetime.today(), nullable=False
     )
 
+    def __repr__(self):
+        return self.id
 
-class Student(BaseModel, table=True):
+
+class Student(BaseModel, Base, table=True):
+    __tablename__ = "student"
     username: str = Field(max_length=50)
     chat_id: int = Field(max_length=100)
     last_name: str = Field(max_length=50)
@@ -28,6 +34,9 @@ class Student(BaseModel, table=True):
     login_time: Optional[datetime] = Field(nullable=True)
     logout_time: Optional[datetime] = Field(nullable=True)
     tweets: List["Tweet"] = Relationship(back_populates="student")
+
+    def __repr__(self):
+        return self.username, self.chat_id, self.last_name, self.first_name
 
     @classmethod
     def create_student(
@@ -60,7 +69,8 @@ class Student(BaseModel, table=True):
             session.commit()
 
 
-class Tweet(BaseModel, table=True):
+class Tweet(BaseModel, Base, table=True):
+    __tablename__ = "tweet"
     chat_id: int = Field(max_length=100)
     username: str = Field(max_length=50)
     first_name: str = Field(max_length=200)
@@ -71,11 +81,20 @@ class Tweet(BaseModel, table=True):
     admin_id: Optional[int] = Field(default=None, foreign_key="admin.id")
     admin: Optional["Admin"] = Relationship(back_populates="tweets")
 
+    def __repr__(self):
+        return (
+            self.chat_id,
+            self.username,
+            self.first_name,
+            self.last_name,
+            self.content,
+        )
+
     @classmethod
     def create_tweet(
         cls,
         chat_id: int,
-        username:str,
+        username: str,
         first_name: str,
         last_name: str,
         content: str,
@@ -103,7 +122,8 @@ class Tweet(BaseModel, table=True):
             return tweet
 
 
-class Admin(BaseModel, table=True):
+class Admin(BaseModel, Base, table=True):
+    __tablename__ = "admin"
     telegram_chat_id: int = config("TELEGRAM_CHAT_ID_ADMIN", cast=int)
     username: str = "Y_Shabanei"
     email: str = config("EMAIL_ADMIN")
@@ -112,6 +132,16 @@ class Admin(BaseModel, table=True):
     phone_number: int = config("PHONE_ADMIN", cast=int)
     tweets: List["Tweet"] = Relationship(back_populates="admin")
     approved_request: List["ApprovedRequest"] = Relationship(back_populates="admin")
+
+    def __repr__(self):
+        return (
+            self.telegram_chat_id,
+            self.username,
+            self.email,
+            self.role,
+            self.expiration,
+            self.phone_number,
+        )
 
     @classmethod
     def create_admin(cls) -> None:
@@ -150,13 +180,17 @@ class Admin(BaseModel, table=True):
                 session.commit()
 
 
-class ApprovedRequest(BaseModel, table=True):
+class ApprovedRequest(BaseModel, Base, table=True):
+    __tablename__ = "approvedrequest"
     chat_id: int = Field(max_length=10)
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
     content: str = Field(max_length=5000)
     admin_id: Optional[int] = Field(default=None, foreign_key="admin.id")
     admin: Optional[Admin] = Relationship(back_populates="approved_request")
+
+    def __repr__(self):
+        return self.chat_id, self.first_name, self.last_name, self.content
 
     @classmethod
     def create_approvedrequest(

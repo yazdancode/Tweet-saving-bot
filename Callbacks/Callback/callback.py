@@ -46,9 +46,9 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
         student: Optional[Student] = Student.get(chat_id=call.from_user.id)
         if student is None:
             users = call.from_user
-            user = users.username if users.username else "UnknownUserName"
-            last_name = users.last_name if users.last_name else "UnknownLastName"
-            first_name = users.first_name if users.first_name else "UnknownFirstName"
+            user = users.username if users.username else "نام کاربری وجود ندارد"
+            last_name = users.last_name if users.last_name else "نام خانوادگی وجود ندار"
+            first_name = users.first_name if users.first_name else "نام نامشخص"
             chat_id = call.message.chat.id
             Student.create_student(
                 username=user,
