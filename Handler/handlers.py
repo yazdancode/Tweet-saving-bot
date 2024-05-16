@@ -193,7 +193,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
             )
             bot.send_message(
                 chat_id,
-                text=BotMessages.generate_starts_message(),
+                text=BotMessages.generate_back_message(),
                 reply_markup=keyboards,
             )
         elif received_message.text == BotCommands.opt_out.value:
@@ -209,7 +209,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
             )
             bot.send_message(
                 chat_id,
-                text=BotMessages.generate_starts_message(),
+                text=BotMessages.generate_back_message(),
                 reply_markup=keyboards,
             )
 
