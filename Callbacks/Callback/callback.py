@@ -5,6 +5,7 @@ from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
 from Model.model import Student, Tweet
+
 ActionType = Callable[[], None]
 
 
@@ -17,9 +18,7 @@ def handle_channel_callback(call: CallbackQuery, bot: TeleBot) -> None:
         CallbackDate.CALLBACK_MANUFACTURE.value: lambda: manufacturer_handler(
             bot, call.message
         ),
-        CallbackDate.CALLBACK_CONFIRM.value: lambda: confirmation_handler(
-            call, bot
-        ),
+        CallbackDate.CALLBACK_CONFIRM.value: lambda: confirmation_handler(call, bot),
         # CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
     }
 
@@ -41,14 +40,16 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
     is_member: bool = is_subscribed(
         bot, user_id=call.from_user.id, channels=configs.channels
     )
-    if is_member is False:
+    if not is_member:
         bot.answer_callback_query(call.id, ChannelInfo.WELCOME.value, show_alert=True)
-    elif is_member:
+    else:
         student: Optional[Student] = Student.get(chat_id=call.from_user.id)
         if student is None:
             users = call.from_user
             user = users.username if users.username else "نام کاربری وجود ندارد"
-            last_name = users.last_name if users.last_name else "نام خانوادگی وجود ندار"
+            last_name = (
+                users.last_name if users.last_name else "نام خانوادگی وجود ندارد"
+            )
             first_name = users.first_name if users.first_name else "نام نامشخص"
             chat_id = call.message.chat.id
             Student.create_student(
@@ -57,33 +58,31 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
                 last_name=last_name,
                 first_name=first_name,
             )
-            keyboard_buttons = [
-                ChannelInfo.create_request.value,
-                BotCommands.GUIDE.value,
-                BotCommands.MANUFACTURER.value,
-                BotCommands.Search_request.value,
-            ]
-            keyboard = create_keyboard(keyboard_buttons)
             bot.send_message(
-                call.message.chat.id,
+                chat_id,
                 BotMessages.generate_start_message(),
-                reply_markup=keyboard,
+                reply_markup=create_keyboard(
+                    [
+                        ChannelInfo.create_request.value,
+                        BotCommands.GUIDE.value,
+                        BotCommands.MANUFACTURER.value,
+                        BotCommands.Search_request.value,
+                    ]
+                ),
             )
         else:
-            keyboard_buttons = [
-                ChannelInfo.create_request.value,
-                BotCommands.GUIDE.value,
-                BotCommands.MANUFACTURER.value,
-                BotCommands.Search_request.value,
-            ]
-            keyboard = create_keyboard(keyboard_buttons)
             bot.send_message(
                 call.message.chat.id,
                 BotMessages.generate_starts_message(),
-                reply_markup=keyboard,
+                reply_markup=create_keyboard(
+                    [
+                        ChannelInfo.create_request.value,
+                        BotCommands.GUIDE.value,
+                        BotCommands.MANUFACTURER.value,
+                        BotCommands.Search_request.value,
+                    ]
+                ),
             )
-            
-
 
 
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
@@ -92,7 +91,6 @@ def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass
-
 
 # def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass

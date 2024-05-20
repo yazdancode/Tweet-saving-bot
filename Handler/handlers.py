@@ -177,7 +177,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
             keyboards.add(BotMessages.COMING_BACK.value)
             bot.send_message(
                 received_message.chat.id,
-                ChannelInfo.error.value,
+                ChannelInfo.guide.value,
                 reply_markup=keyboards,
             )
         elif received_message.text == BotMessages.COMING_BACK.value:

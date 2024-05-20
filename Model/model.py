@@ -16,10 +16,6 @@ engine = create_engine(sqlite_url, echo=True)
 class BaseModel(SQLModel, Base):
     __tablename__ = "model-basemodel"
     id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(default=datetime.today(), nullable=False)
-    last_edited: datetime = Field(
-        default_factory=lambda: datetime.today(), nullable=False
-    )
 
     def __repr__(self):
         return self.id, self.username, self.chat_id, self.last_name, self.first_name
@@ -72,10 +68,11 @@ class Student(BaseModel, Base, table=True):
 class Tweet(BaseModel, Base, table=True):
     __tablename__ = "tweet"
     chat_id: int = Field(max_length=100)
-    username: str = Field(max_length=50)
+    username: Optional[str] = Field(max_length=50, nullable=True)
     first_name: str = Field(max_length=200)
     last_name: str = Field(max_length=200)
     content: str = Field(max_length=200)
+    postage_date: str = Field(max_length=100)
     student_id: Optional[int] = Field(default=None, foreign_key="student.id")
     student: Optional[Student] = Relationship(back_populates="tweets")
     admin_id: Optional[int] = Field(default=None, foreign_key="admin.id")
@@ -83,7 +80,7 @@ class Tweet(BaseModel, Base, table=True):
 
     def __repr__(self):
         return (
-            self.id_number,
+            self.id,
             self.chat_id,
             self.username,
             self.first_name,
@@ -95,10 +92,11 @@ class Tweet(BaseModel, Base, table=True):
     def create_tweet(
         cls,
         chat_id: int,
-        username: str,
+        username: Optional[str],
         first_name: str,
         last_name: str,
         content: str,
+        postage_date: str,
         student_id: Optional[int] = None,
         admin_id: Optional[int] = None,
     ) -> "Tweet":
@@ -109,6 +107,7 @@ class Tweet(BaseModel, Base, table=True):
                 first_name=first_name,
                 last_name=last_name,
                 content=content,
+                postage_date=postage_date,
                 student_id=student_id,
                 admin_id=admin_id,
             )
@@ -117,9 +116,9 @@ class Tweet(BaseModel, Base, table=True):
             return tweet
 
     @classmethod
-    def get(cls, chat_id: int) -> Optional["Tweet"]:
+    def get(cls, tweet_id: int) -> Optional["Tweet"]:
         with Session(engine) as session:
-            tweet = session.query(cls).filter_by(chat_id=chat_id).first()
+            tweet = session.query(cls).filter_by(id=tweet_id).first()
             return tweet
 
 
