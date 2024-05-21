@@ -115,12 +115,6 @@ class Tweet(BaseModel, Base, table=True):
             session.commit()
             return tweet
 
-    @classmethod
-    def get(cls, tweet_id: int) -> Optional["Tweet"]:
-        with Session(engine) as session:
-            tweet = session.query(cls).filter_by(id=tweet_id).first()
-            return tweet
-
 
 class Admin(BaseModel, Base, table=True):
     __tablename__ = "admin"

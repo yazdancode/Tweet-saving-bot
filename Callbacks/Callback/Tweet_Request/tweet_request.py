@@ -3,7 +3,6 @@ from decouple import config
 from persiantools.jdatetime import JalaliDate
 from telebot import TeleBot
 from telebot.types import InlineKeyboardMarkup, Message, InlineKeyboardButton
-
 from Config import configs
 from Enum.enum import ChannelInfo
 from Model.model import Tweet, Admin
@@ -33,9 +32,7 @@ def tweet_request(message: Message, bot: TeleBot) -> None:
         f"شماره کاربری: {chat_id}\n"
         "دریافت شد. "
     )
-
     bot.send_message(telegram_chat_id, text=new_request_msg, parse_mode="html")
-
     Tweet.create_tweet(
         chat_id=chat_id,
         username=username,
@@ -44,13 +41,12 @@ def tweet_request(message: Message, bot: TeleBot) -> None:
         content=user_text,
         postage_date=jalali_date,
     )
-
     bot.send_message(chat_id, ChannelInfo.Telegram_Text.value)
-
+    bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
     Admin.create_admin_once()
     Admin.update_admin_monthly()
 
-    review_keyboard = InlineKeyboardMarkup(row_width=1)
+    review_keyboard = InlineKeyboardMarkup(row_width=2)
     buttons = [
         InlineKeyboardButton("تایید درخواست ✅", callback_data="confirm"),
         InlineKeyboardButton("درخواست ویرایش ✏️", callback_data="edit_"),
