@@ -8,7 +8,6 @@ def register_callback_handler(bot: TeleBot) -> None:
         "tweet",
         "guide",
         "manufacture",
-        "confirm",
         "cancel",
     ]
     for prefix in callback_prefixes:
@@ -17,3 +16,8 @@ def register_callback_handler(bot: TeleBot) -> None:
             func=lambda call, p=prefix: call.data.startswith(p),
             pass_bot=True,
         )
+    bot.register_callback_query_handler(
+        callback=callback.confirmation_handler,
+        func=lambda call: call.data.startswith("confirm:"),
+        pass_bot=True,
+    )

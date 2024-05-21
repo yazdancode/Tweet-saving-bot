@@ -1,4 +1,4 @@
-t="""
+t = """
 یک درخواست جدید دریافت شد
 اطلاعات کاربر به شرح زیر است:
 محتوای درخواست: m
@@ -11,6 +11,6 @@ t="""
 
 import re
 
-pattern =r"شماره کاربری: \d+"
-x=re.findall(pattern=pattern, string=t)[0].split()[2]
+pattern = r"شماره کاربری: \d+"
+x = re.findall(pattern=pattern, string=t)[0].split()[2]
 print(x)

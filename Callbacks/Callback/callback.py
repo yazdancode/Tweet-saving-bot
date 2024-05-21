@@ -87,7 +87,15 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
 
 
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
-    pass
+    user = call.data.split()[0]
+    chat_id = "".join([char for char in user if char.isdigit()])
+    user_info = bot.get_chat(chat_id)
+    username = user_info.username
+    first_name = user_info.first_name
+    last_name = user_info.last_name
+    print(f"First Name: {first_name}")
+    print(f"Last Name: {last_name}")
+    print(f"Username: {username}")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:

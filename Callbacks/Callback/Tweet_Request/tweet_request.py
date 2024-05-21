@@ -48,7 +48,7 @@ def tweet_request(message: Message, bot: TeleBot) -> None:
 
     review_keyboard = InlineKeyboardMarkup(row_width=2)
     buttons = [
-        InlineKeyboardButton("تایید درخواست ✅", callback_data="confirm"),
+        InlineKeyboardButton("تایید درخواست ✅", callback_data=f"confirm:{chat_id}"),
         InlineKeyboardButton("درخواست ویرایش ✏️", callback_data="edit_"),
         InlineKeyboardButton("لغو درخواست ❌", callback_data="cancel_"),
     ]
