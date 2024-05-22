@@ -1,11 +1,10 @@
-import re
 from typing import Callable, Optional
 from telebot import TeleBot
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
 from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
-from Model.model import Student, Tweet
+from Model.model import Student, Tweet, ApprovedRequest
 
 ActionType = Callable[[], None]
 
@@ -87,18 +86,35 @@ def handle_membership_request(call: CallbackQuery, bot: TeleBot) -> None:
 
 
 def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
+    """
+    Handle the confirmation of membership requests.
+
+    :param call: CallbackQuery object containing the callback data
+    :param bot: TeleBot object for interacting with the Telegram API
+    """
+    latest_request = Tweet.get_latest_request()
     user = call.data.split()[0]
-    chat_id = "".join([char for char in user if char.isdigit()])
+    number = "".join([char for char in user if char.isdigit()])
+    chat_id = int(number)
     user_info = bot.get_chat(chat_id)
-    username = user_info.username
-    first_name = user_info.first_name
-    last_name = user_info.last_name
-    print(f"First Name: {first_name}")
-    print(f"Last Name: {last_name}")
-    print(f"Username: {username}")
+    username = user_info.username if user_info.username else "نام کاربری وجود ندارد"
+    first_name = user_info.first_name if user_info.first_name else "نام نامشخص"
+    last_name = (
+        user_info.last_name if user_info.last_name else "نام خانوادگی وجود ندارد"
+    )
+    content = latest_request.content
+    ApprovedRequest.create_approved_request(
+        chat_id=chat_id,
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+        content=content,
+    )
+    bot.send_message(chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
+    bot.send_message(call.message.chat.id, "پیام درخواست شما به کاربر ارسال شد")
 
 
-# def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
+# def handle_edit_request(call: CallbackQuery, b    ot: TeleBot) -> None:
 #     pass
 
 # def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
