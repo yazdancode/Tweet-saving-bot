@@ -19,7 +19,7 @@ def handle_channel_callback(call: CallbackQuery, bot: TeleBot) -> None:
             bot, call.message
         ),
         CallbackDate.CALLBACK_CONFIRM.value: lambda: confirmation_handler(call, bot),
-        # CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
+        CallbackDate.CALLBACK_CANCEL.value: lambda: handle_cancel(call, bot),
     }
 
     action: Optional[ActionType] = actions.get(call.data)
@@ -114,8 +114,14 @@ def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
     bot.send_message(call.message.chat.id, "پیام درخواست شما به کاربر ارسال شد")
 
 
-# def handle_edit_request(call: CallbackQuery, b    ot: TeleBot) -> None:
+# def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
 #     pass
 
-# def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
-#     pass
+
+def handle_cancel(call: CallbackQuery, bot: TeleBot) -> None:
+    user = call.data.split()[0]
+    admin_message = call.message.chat.id
+    number = "".join([char for char in user if char.isdigit()])
+    chat_id = int(number)
+    bot.send_message(chat_id, "درخواست شما توسط ادمین رد شد ❌")
+    bot.send_message(admin_message, "پیام درخواست شما به کاربر ارسال شد")
