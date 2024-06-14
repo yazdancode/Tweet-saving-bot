@@ -3,7 +3,6 @@ from .handlers import (
     handle_start_command,
     guide_handler,
     manufacturer_handler,
-    create_keyboard_markup,
 )
 
 __all__ = [
@@ -11,5 +10,4 @@ __all__ = [
     "handle_start_command",
     "guide_handler",
     "manufacturer_handler",
-    "create_keyboard_markup",
 ]

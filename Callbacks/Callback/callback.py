@@ -3,7 +3,7 @@ from telebot import TeleBot
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
-from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
+from Handler.handlers import guide_handler, manufacturer_handler
 from Model.model import Student, Tweet, ApprovedRequest
 
 ActionType = Callable[[], None]

@@ -103,24 +103,22 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
 
     @bot.message_handler(func=lambda received_message: True)
     def handle_keyboard(received_message: Message):
-        if received_message.text == ChannelInfo.create_request.value:
+        text = received_message.text
+        chat_id = received_message.chat.id
+        if text == ChannelInfo.create_request.value:
             keyboards = ReplyKeyboardMarkup(
                 resize_keyboard=True, one_time_keyboard=True, row_width=1
             )
             keyboards.add(BotMessages.SUBMIT_TEXT.value, BotMessages.COMING_BACK.value)
             bot.send_message(
-                received_message.chat.id,
-                BotMessages.TWEET_TEXT.value,
-                reply_markup=keyboards,
+                chat_id, BotMessages.TWEET_TEXT.value, reply_markup=keyboards
             )
-        elif received_message.text == BotMessages.SUBMIT_TEXT.value:
-            bot.send_message(
-                received_message.chat.id, BotMessages.SUBMIT_REQUESTS.value
-            )
+        elif text == BotMessages.SUBMIT_TEXT.value:
+            bot.send_message(chat_id, BotMessages.SUBMIT_REQUESTS.value)
             bot.register_next_step_handler(
                 received_message, lambda message: tweet_request(message, bot)
             )
-        elif received_message.text == BotCommands.MANUFACTURER.value:
+        elif text == BotCommands.MANUFACTURER.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
             keyboards.add(
                 BotCommands.Communication__management.value,
@@ -129,42 +127,36 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 ChannelInfo.Order.value,
             )
             bot.send_message(
-                received_message.chat.id,
-                BotMessages.profiles.value,
-                reply_markup=keyboards,
+                chat_id, BotMessages.profiles.value, reply_markup=keyboards
             )
-        elif received_message.text == BotCommands.Communication__management.value:
+        elif text in [
+            BotCommands.Communication__management.value,
+            ChannelInfo.Order.value,
+        ]:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotCommands.opt_out.value)
-            bot.send_message(
-                chat_id=messages.chat.id,
-                text=BotMessages.text.value,
-                reply_markup=keyboards,
-            )
+            bot.send_message(chat_id, BotMessages.text.value, reply_markup=keyboards)
             bot.register_next_step_handler(
                 received_message, lambda message: support_handler(message, bot)
             )
-        elif received_message.text == ChannelInfo.Order.value:
+        elif text == BotCommands.Programmer_resume.value:
+            channel_username = "yazdancodeo"
+            message_id = 26
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotCommands.opt_out.value)
-            bot.send_message(
-                chat_id=messages.chat.id,
-                text=BotMessages.text.value,
-                reply_markup=keyboards,
+            bot.send_message(chat_id, BotMessages.profile.value, reply_markup=keyboards)
+            bot.forward_message(
+                chat_id, from_chat_id="@" + channel_username, message_id=message_id
             )
-            bot.register_next_step_handler(
-                received_message, lambda message: support_handler(message, bot)
-            )
-        elif received_message.text == BotCommands.Programmer_resume.value:
+        elif text == BotCommands.GUIDE.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-            keyboards.add(BotCommands.opt_out.value)
+            keyboards.add(BotMessages.COMING_BACK.value)
             bot.send_message(
-                chat_id=messages.chat.id,
-                text=BotMessages.profile.value,
+                chat_id,
+                ChannelInfo.guide.value,
                 reply_markup=keyboards,
             )
-
-        elif received_message.text == BotCommands.Search_request.value:
+        elif text == BotCommands.Search_request.value:
             keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
             keyboards.add(BotMessages.COMING_BACK.value)
             bot.send_message(
@@ -172,16 +164,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 ChannelInfo.error.value,
                 reply_markup=keyboards,
             )
-        elif received_message.text == BotCommands.GUIDE.value:
-            keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-            keyboards.add(BotMessages.COMING_BACK.value)
-            bot.send_message(
-                received_message.chat.id,
-                ChannelInfo.guide.value,
-                reply_markup=keyboards,
-            )
-        elif received_message.text == BotMessages.COMING_BACK.value:
-            chat_id = received_message.chat.id
+        elif text == BotMessages.COMING_BACK.value or text == BotCommands.opt_out.value:
             keyboards = ReplyKeyboardMarkup(
                 resize_keyboard=True, one_time_keyboard=True, row_width=2
             )
@@ -192,25 +175,7 @@ def handle_start_command(bot: TeleBot, messages: Message) -> None:
                 KeyboardButton(BotCommands.Search_request.value),
             )
             bot.send_message(
-                chat_id,
-                text=BotMessages.generate_back_message(),
-                reply_markup=keyboards,
-            )
-        elif received_message.text == BotCommands.opt_out.value:
-            chat_id = received_message.chat.id
-            keyboards = ReplyKeyboardMarkup(
-                resize_keyboard=True, one_time_keyboard=True, row_width=2
-            )
-            keyboards.add(
-                KeyboardButton(ChannelInfo.create_request.value),
-                KeyboardButton(BotCommands.GUIDE.value),
-                KeyboardButton(BotCommands.MANUFACTURER.value),
-                KeyboardButton(BotCommands.Search_request.value),
-            )
-            bot.send_message(
-                chat_id,
-                text=BotMessages.generate_back_message(),
-                reply_markup=keyboards,
+                chat_id, BotMessages.generate_back_message(), reply_markup=keyboards
             )
 
 
@@ -229,22 +194,26 @@ def manufacturer_handler(bot: TeleBot, message: Message) -> None:
     send_message_with_markup(
         bot, message.chat.id, BotMessages.profiles.value, reply_markup=keyboards
     )
-    if message.text == BotCommands.Communication__management.value:
+
+    text = message.text
+    chat_id = message.chat.id
+
+    if text in [
+        BotCommands.Communication__management.value,
+        BotCommands.Programmer_resume.value,
+    ]:
         keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
         keyboards.add(BotCommands.opt_out.value)
         bot.send_message(
-            chat_id=message.chat.id, text=BotMessages.text.value, reply_markup=keyboards
-        )
-    elif message.text == BotCommands.Programmer_resume.value:
-        keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-        keyboards.add(BotCommands.opt_out.value)
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=BotMessages.profile.value,
+            chat_id,
+            (
+                BotMessages.text.value
+                if text == BotCommands.Communication__management.value
+                else BotMessages.profile.value
+            ),
             reply_markup=keyboards,
         )
-    elif message.text == BotCommands.opt_out.value:
-        chat_id = message.chat.id
+    elif text == BotCommands.opt_out.value:
         keyboards = ReplyKeyboardMarkup(
             resize_keyboard=True, one_time_keyboard=True, row_width=2
         )
@@ -255,16 +224,12 @@ def manufacturer_handler(bot: TeleBot, message: Message) -> None:
             KeyboardButton(BotCommands.Search_request.value),
         )
         bot.send_message(
-            chat_id,
-            text=BotMessages.generate_starts_message(),
-            reply_markup=keyboards,
+            chat_id, BotMessages.generate_starts_message(), reply_markup=keyboards
         )
-    elif message.text == ChannelInfo.Order.value:
+    elif text == ChannelInfo.Order.value:
         keyboards = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
         keyboards.add(BotCommands.opt_out.value)
-        bot.send_message(
-            chat_id=message.chat.id, text=BotMessages.text.value, reply_markup=keyboards
-        )
+        bot.send_message(chat_id, BotMessages.text.value, reply_markup=keyboards)
         bot.register_next_step_handler(
             message, lambda messages: support_handler(message, bot)
         )
