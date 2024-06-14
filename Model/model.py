@@ -137,7 +137,7 @@ class Tweet(BaseModel, table=True):
 class Admin(BaseModel, table=True):
     __tablename__ = "admins"
     telegram_chat_id: int = config("TELEGRAM_CHAT_ID_ADMIN", cast=int)
-    username: str = "Y_Shabanei"
+    username: str = "sedayedaneshjoolu_admin"
     email: str = config("EMAIL_ADMIN")
     role: str = "admin"
     expiration: datetime = datetime(year=2024, month=5, day=26)

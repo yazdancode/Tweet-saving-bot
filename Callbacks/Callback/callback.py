@@ -3,7 +3,7 @@ from telebot import TeleBot
 from telebot.types import CallbackQuery, ReplyKeyboardMarkup
 from Config import configs
 from Enum.enum import BotMessages, BotCommands, ChannelInfo, CallbackDate
-from Handler.handlers import guide_handler, manufacturer_handler
+from Handler.handlers import guide_handler, manufacturer_handler, is_subscribed
 from Model.model import Student, Tweet, ApprovedRequest
 
 ActionType = Callable[[], None]
@@ -111,7 +111,7 @@ def confirmation_handler(call: CallbackQuery, bot: TeleBot) -> None:
         content=content,
     )
     bot.send_message(chat_id, "درخواست شما توسط ادمین تأیید شد ✅")
-    bot.send_message(call.message.chat.id, "پیام درخواست شما به کاربر ارسال شد")
+    bot.send_message(call.message.chat.id, "🚀 پیام درخواست شما به کاربر ارسال شد")
 
 
 # def handle_edit_request(call: CallbackQuery, bot: TeleBot) -> None:
